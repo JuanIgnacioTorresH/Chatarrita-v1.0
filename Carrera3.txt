@@ -1,0 +1,75 @@
+#Esta version hace el recorrido por el borde pero va a reinciando de a poco lo que lo hace inviable
+from machine import Pin, PWM
+import time
+
+nein = (insertar numero que permita dar 90 a un lado)
+
+In3 = Pin (13, Pin.OUT)
+In3 = Pin (12, Pin.OUT)
+In3 = Pin (11, Pin.OUT)
+In3 = Pin (10, Pin.OUT)
+infr1 = Pin (6, Pin.IN)
+infr2 = Pin (7, Pin.IN)
+#Delanteros
+infr3 = Pin (8, Pin.IN)
+#Trasero Izq
+infr4 = Pin (9, Pin.IN)
+#Trasero Derecho
+
+EN_B= machine.PWM (machine.Pin(27))
+EN_A= machine.PWM (machine.Pin(26))
+#variables que regulan el pwm del motor A y B respectivamente.
+EN_A.freq(10000)
+EN_B.freq(10000)
+#frecuencia con la que va a trabajar.
+EN_A.duty_u16(65025)
+EN_B.duty_u16(65025)
+#velocidad maxima con la que va a trabajar los motores.
+
+def move_forward():
+    In1.high()
+    In2.low()
+    In3.high()
+    In4.low()
+    #Funcion para ir adelante
+
+def turn_right():
+    In1.low()
+    In2.low()
+    In3.low()
+    In4.high()
+    #Funcion para girar a la derecha
+
+def stop():
+    In1.low()
+    In2.low()
+    In3.low()
+    In4.low()
+    #Funcion para detenerse
+
+while True:
+    time1 = utime_ticks_s()
+    while utime_ticks_diff(utime_ticks_s - time1) < nein:
+        turn_right()
+        #Giras a la derecha por tantos segundos. la idea seria ajuistarlo para que gire 90°
+    if infr1.value() == 0 and infr2.value() == 0:
+        while infr1.value() == 0 or infr2.value() == 0:
+            if In1.value == 0 or In4.value == 0 or In3.value == 1 or In2.value == 1:
+                move_forward()
+                #Se mueve hasta llegar al borde
+    time1 = utime_ticks_s()
+    while utime_ticks_diff(utime_ticks_s - time1) < nein:
+        turn_left()
+        #Giras a la  por tantos segundos. la idea seria ajuistarlo para que gire 90° en sentido contrario
+    sleep_us (2)
+    #Puesta en posición
+    
+    move_forward()
+    if infr2_value() == 0:
+        if infr4_value() == 0:
+            stop()
+            while infr4()
+            turn_right()
+    if infr1_value() == 1: 
+        while infr1_value() == 1:
+            
