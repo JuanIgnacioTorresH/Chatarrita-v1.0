@@ -2,10 +2,12 @@
 from machine import Pin
 import time
 
-In3 = Pin (13, Pin.OUT)
-In3 = Pin (12, Pin.OUT)
+In1 = Pin (13, Pin.OUT)
+In2 = Pin (12, Pin.OUT)
 In3 = Pin (11, Pin.OUT)
-In3 = Pin (10, Pin.OUT)
+In4 = Pin (10, Pin.OUT)
+#Checkea que sean esos los pines para cada uno, asigne a cualquiera
+
 infr1 = Pin (6, Pin.IN)
 infr2 = Pin (7, Pin.IN)
 #Delanteros
@@ -13,6 +15,12 @@ infr3 = Pin (8, Pin.IN)
 #Trasero Izq
 infr4 = Pin (9, Pin.IN)
 #Trasero Derecho
+
+EN_A = Pin (14, Pin.OUT)
+EN_B = Pin (9, Pin OUT)
+EN_A.high()
+EN_B.high()
+#Habilitadores
 
 def move_forward():
     In1.high()
