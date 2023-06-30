@@ -38,19 +38,19 @@ def ultra ():
 def move_forward():
     In1.high()
     In2.low()
-    In3.high()
-    In4.low()
+    In3.low()
+    In4.high()
     #Funcion para ir adelante
 
 def move_backwards():
     In1.low()
     In2.high()
-    In3.low()
-    In4.high()
+    In3.high()
+    In4.low()
 
 def turn_right():
     In1.low()
-    In2.low()
+    In2.high()
     In3.low()
     In4.high()
     #Funcion para girar a la derecha
