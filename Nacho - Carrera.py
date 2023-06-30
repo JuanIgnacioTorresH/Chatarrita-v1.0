@@ -1,41 +1,44 @@
 #Esta version hace todo el recorrido en diagonales, no se si es muy practico
-from machine import Pin
+from machine import Pin, ADC
 import time
 
 In1 = Pin (13, Pin.OUT)
 In2 = Pin (12, Pin.OUT)
 In3 = Pin (11, Pin.OUT)
 In4 = Pin (10, Pin.OUT)
-#Checkea que sean esos los pines para cada uno, asigne a cualquiera
+#Pines de motores
 
-infr1 = Pin (6, Pin.IN)
-infr2 = Pin (7, Pin.IN)
-#Delanteros
-infr3 = Pin (8, Pin.IN)
-#Trasero Izq
-infr4 = Pin (9, Pin.IN)
-#Trasero Derecho
-
-EN_A = Pin (14, Pin.OUT)
-EN_B = Pin (9, Pin OUT)
-EN_A.high()
-EN_B.high()
-#Habilitadores
+infr1 = ADC(Pin(27))
+#infrarojo izquierdo
+infr2 = ADC(Pin(28))
+#infrarojo derecho
+infr3 = ADC(Pin(26))
+#infrarojo delantero
+ivalue1 = 0
+ivalue2 = 0
+ivalue3 = 0
+#valores de ADC de los infrarojos
 
 def move_forward():
     In1.high()
     In2.low()
-    In3.high()
-    In4.low()
+    In3.low()
+    In4.high()
     #Funcion para ir adelante
 
 def turn_right():
     In1.low()
-    In2.low()
+    In2.high()
     In3.low()
     In4.high()
     #Funcion para girar a la derecha
 
+def turn_left():
+    In1.high()
+    In2.low()
+    In3.high()
+    In4.high()
+    #Funcion para girar a la derecha
 
 def stop():
     In1.low()
@@ -44,33 +47,47 @@ def stop():
     In4.low()
     #Funcion para detenerse
 
+time1 = 0
+#variable para guardar tiempos de referencia
+def position_init():
+    ivalue3 = ((infr3.read_u16())*3) / 65336
+    stop()
+    sleep_us(2)
+    time1 = utime_ticks_s()
+    while utime_ticks_diff(utime_ticks_s - time1) < 5:
+        turn_right()
+        #Giro a la derecha lo suficiente como para que doble 180 grados a la derecha
+    sleep_us (2)
+    if ivalue3 <= 3:
+        while ivalue3 <= 3:
+            move_forward()
+            #Se mueve hasta llegar al borde
+        stop()
+    while utime_ticks_diff(utime_ticks_s - time1) < 5:
+        turn_left()
+        #Giro suficiente como para que se centre de vuelta
+    stop()
+#Inicia la posicion inicial, dirigiendo a chatarrita al borde derecho de la pista
+
+
+position_init()            
 while True:
-    if infr1.value() == 1 or infr3.value() == 1:
-        #Funcion si los infrarojos izquierdos detectan el borde de la pista
+    ivalue1 = ((infr1.read_u16())*3) / 65336
+    ivalue2 = ((infr2.read_u16())*3) / 65336
+    sleep_us(2)
+    move_forward()
+    if ivalue1() <= 3:
+        #Funcion si los infrarojos izquierdos detectan que se estan tocando parte negra de la pista, lo que signfica que hay un giro a la izquierda
         stop()
         sleep_us(2)
-        #Paro a chatarrita
         time1 = utime_ticks_s()
-        while utime_ticks_diff(utime_ticks_s - time1) < 1: #El 1 seria la cantidad de segundos que le quiero dar, eso hay que probarlo.
-            turn_right()
-        #Giras a la derecha por tantos segundos (el 1)
-        move_forward()
-        #Seguis avanzando
-    else:
-        move_forward()
-        #Si no hay giros que hacer, sigue avanzando
-    
-    if infr2.value() == 1 or infr4.value() == 1:
-        #Funcion si los infrarojos derechos detectan el borde de la pista
-        stop()
-        sleep_us(2)
-        #Paro a chatarrita
-        time1 = utime_ticks_s()
-        while utime_ticks_diff(utime_ticks_s - time1) < 1: #El 1 seria la cantidad de segundos que le quiero dar, eso hay que probarlo.
+        while utime_ticks_diff(utime_ticks_s - time1) < 1:
             turn_left()
-        #Giras a la izq por tantos segundos (eso seria el 1)
-        move_forward()
-        #Seguis avanzando
-    else:
-        move_forward()
-        #Si no hay que girar seguis avanzando
+    
+    if infr2.value() >= 3:
+        #Funcion si los infrarojos derechos detectan que se estan tocando parte negra de la pista, lo que signfica que hay un giro a la derecha
+        stop()
+        sleep_us(2)
+        time1 = utime_ticks_s()
+        while utime_ticks_diff(utime_ticks_s - time1) < 1:
+            turn_right()
